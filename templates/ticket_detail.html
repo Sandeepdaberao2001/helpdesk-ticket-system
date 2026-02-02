@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Ticket Discussion{% endblock %}
+
+{% block content %}
+<h2>{{ ticket.title }}</h2>
+
+<p>
+<b>Status:</b> {{ ticket.status }} |
+<b>Priority:</b> {{ ticket.priority }}
+</p>
+
+<hr>
+
+<h3>Conversation</h3>
+
+<div style="max-height:400px; overflow-y:auto;">
+{% for c in comments %}
+    <div style="margin-bottom:10px;">
+        <b>
+            {% if c.user_id == ticket.created_by %}
+                User
+            {% else %}
+                Agent
+            {% endif %}
+        </b>
+        <small>({{ c.created_at }})</small>
+        <br>
+        {{ c.message }}
+    </div>
+    <hr>
+{% else %}
+    <p>No comments yet.</p>
+{% endfor %}
+</div>
+
+<hr>
+
+<h3>Add Reply</h3>
+
+<form method="POST" action="/tickets/{{ ticket.id }}/comment">
+    <textarea name="message" required></textarea><br><br>
+    <button type="submit">Send</button>
+</form>
+
+<hr>
+
+<h3>Status History</h3>
+
+<ul>
+{% for h in history %}
+    <li>
+        {{ h.old_status }} → <b>{{ h.new_status }}</b>
+        <small>(at {{ h.changed_at }})</small>
+    </li>
+{% else %}
+    <li>No status changes yet.</li>
+{% endfor %}
+</ul>
+
+
+{% endblock %}

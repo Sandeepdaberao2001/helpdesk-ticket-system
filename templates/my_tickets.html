@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Tickets{% endblock %}
+
+{% block content %}
+<h2>My Tickets</h2>
+
+{% for ticket in tickets %}
+<div style="margin-bottom:15px;">
+    <b>{{ ticket.title }}</b><br>
+    {{ ticket.description }}<br>
+
+    Priority: {{ ticket.priority }}<br>
+    Status: <b>{{ ticket.status }}</b><br>
+
+    <!-- 🔗 ADD THIS LINE -->
+    <a href="/tickets/{{ ticket.id }}">View Conversation</a>
+
+    {% if session.get("user_role") == "agent" %}
+    <form method="POST" action="/tickets/update-status/{{ ticket.id }}">
+        <select name="status">
+            <option value="In Progress" {% if ticket.status == "In Progress" %}selected{% endif %}>
+                In Progress
+            </option>
+            <option value="Resolved" {% if ticket.status == "Resolved" %}selected{% endif %}>
+                Resolved
+            </option>
+        </select>
+        <button type="submit">Update Status</button>
+    </form>
+    {% endif %}
+</div>
+<hr>
+{% else %}
+<p>No tickets found.</p>
+{% endfor %}
+
+
+{% endblock %}
