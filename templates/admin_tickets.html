@@ -4,6 +4,29 @@
 {% block content %}
 <h2>All Tickets</h2>
 
+<h2>Admin Dashboard</h2>
+
+<div style="display:flex; gap:20px; margin-bottom:20px;">
+    <div><b>Total Tickets:</b> {{ total_tickets }}</div>
+    <div><b>Open:</b> {{ open_tickets }}</div>
+    <div><b>In Progress:</b> {{ in_progress_tickets }}</div>
+    <div><b>Resolved:</b> {{ resolved_tickets }}</div>
+</div>
+
+<hr>
+
+<h3>Tickets per Agent</h3>
+
+<ul>
+{% for a in agent_stats %}
+    <li>{{ a.name }} → {{ a.count }} tickets</li>
+{% else %}
+    <li>No agents found.</li>
+{% endfor %}
+</ul>
+
+<hr>
+
 {% for ticket in tickets %}
 <div style="margin-bottom:15px;">
   <b>{{ ticket.title }}</b><br>
