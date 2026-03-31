@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helpdesk Command Center</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Browser-Ready Helpdesk</p>
+                <h1>Helpdesk Command Center</h1>
+            </div>
+            <div class="topbar-actions">
+                <div id="currentUserBadge" class="user-badge hidden"></div>
+                <button id="logoutButton" class="ghost-button hidden" type="button">Logout</button>
+            </div>
+        </header>
+
+        <div id="flash" class="flash hidden"></div>
+
+        <section id="authView" class="auth-grid">
+            <article class="auth-card">
+                <div class="card-heading">
+                    <p class="eyebrow">Welcome Back</p>
+                    <h2>Login</h2>
+                </div>
+                <form id="loginForm" class="stack-form">
+                    <label>
+                        Email
+                        <input type="email" name="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>
+                        Password
+                        <input type="password" name="password" placeholder="Your password" required>
+                    </label>
+                    <button type="submit">Login</button>
+                </form>
+            </article>
+
+            <article class="auth-card">
+                <div class="card-heading">
+                    <p class="eyebrow">First Time Here</p>
+                    <h2>Create Account</h2>
+                </div>
+                <form id="registerForm" class="stack-form">
+                    <label>
+                        Username
+                        <input type="text" name="username" placeholder="Choose a username" required>
+                    </label>
+                    <label>
+                        Email
+                        <input type="email" name="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>
+                        Password
+                        <input type="password" name="password" placeholder="At least 6 characters" required>
+                    </label>
+                    <button type="submit">Register</button>
+                </form>
+            </article>
+        </section>
+
+        <section id="appView" class="hidden">
+            <section class="hero">
+                <div>
+                    <p class="eyebrow">Single-Link Access</p>
+                    <h2 id="heroTitle">Run support from one browser tab.</h2>
+                    <p id="heroSubtitle" class="hero-copy">
+                        Track tickets, reply to customers, and manage your team without a separate frontend build.
+                    </p>
+                </div>
+                <div class="hero-panel">
+                    <div id="summaryCards" class="summary-grid"></div>
+                </div>
+            </section>
+
+            <nav class="view-nav">
+                <button class="nav-button active" data-view="dashboard" type="button">Dashboard</button>
+                <button class="nav-button" data-view="tickets" type="button">Tickets</button>
+                <button class="nav-button" data-view="create" type="button">Create Ticket</button>
+                <button id="adminNavButton" class="nav-button hidden" data-view="admin" type="button">Admin</button>
+            </nav>
+
+            <section id="dashboardSection" class="panel view-section">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Overview</p>
+                        <h3>Current workspace</h3>
+                    </div>
+                    <button id="refreshDashboardButton" class="ghost-button" type="button">Refresh</button>
+                </div>
+                <div id="dashboardContent" class="dashboard-grid"></div>
+            </section>
+
+            <section id="ticketsSection" class="panel view-section hidden">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Tickets</p>
+                        <h3>Search, inspect, and update requests</h3>
+                    </div>
+                    <button id="refreshTicketsButton" class="ghost-button" type="button">Reload</button>
+                </div>
+
+                <form id="ticketFiltersForm" class="filters-grid">
+                    <label>
+                        Status
+                        <select name="status">
+                            <option value="">All</option>
+                            <option value="open">Open</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </label>
+                    <label>
+                        Priority
+                        <select name="priority">
+                            <option value="">All</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </label>
+                    <label class="wide">
+                        Search
+                        <input type="text" name="search" placeholder="Search title or description">
+                    </label>
+                    <div class="filter-actions">
+                        <button type="submit">Apply</button>
+                        <button id="clearFiltersButton" class="ghost-button" type="button">Clear</button>
+                    </div>
+                </form>
+
+                <div class="ticket-layout">
+                    <div>
+                        <div id="ticketListMeta" class="list-meta"></div>
+                        <div id="ticketList" class="ticket-list"></div>
+                        <div id="ticketPagination" class="pagination"></div>
+                    </div>
+                    <div id="ticketDetail" class="detail-card empty-state">
+                        Select a ticket to view details.
+                    </div>
+                </div>
+            </section>
+
+            <section id="createSection" class="panel view-section hidden">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">New Request</p>
+                        <h3>Create a ticket</h3>
+                    </div>
+                </div>
+                <form id="createTicketForm" class="stack-form wide-form">
+                    <label>
+                        Title
+                        <input type="text" name="title" placeholder="Short summary of the issue" required>
+                    </label>
+                    <label>
+                        Description
+                        <textarea name="description" rows="6" placeholder="Describe the issue in detail" required></textarea>
+                    </label>
+                    <div class="two-column">
+                        <label>
+                            Priority
+                            <select name="priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </label>
+                        <label>
+                            Category
+                            <select name="category">
+                                <option value="General">General</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Billing">Billing</option>
+                                <option value="Account">Account</option>
+                                <option value="Feature Request">Feature Request</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button type="submit">Create Ticket</button>
+                </form>
+            </section>
+
+            <section id="adminSection" class="panel view-section hidden">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Admin Tools</p>
+                        <h3>Users, capacity, and ticket oversight</h3>
+                    </div>
+                    <button id="refreshAdminButton" class="ghost-button" type="button">Refresh</button>
+                </div>
+                <div id="adminStats" class="summary-grid"></div>
+                <div class="admin-layout">
+                    <div class="table-card">
+                        <h4>Users</h4>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Tickets</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <h4>Latest Tickets</h4>
+                        <div id="adminTicketSnapshot" class="snapshot-list"></div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <script src="/app.js" defer></script>
+</body>
+</html>
