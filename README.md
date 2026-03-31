@@ -50,6 +50,15 @@ Copy-Item backend\.env.example backend\.env
 http://localhost:5000
 ```
 
+## Run Tests
+
+Use the standard library test suite to validate the critical config and workflow guards:
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE="1"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
 ## MongoDB Atlas Setup
 
 If you want to use MongoDB Atlas instead of local MongoDB:

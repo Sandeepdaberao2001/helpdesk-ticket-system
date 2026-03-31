@@ -23,8 +23,8 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "")
     JWT_EXPIRY_HOURS = int(os.getenv("JWT_EXPIRY_HOURS", "4"))
 
-    MONGO_URI = "mongodb+srv://admin:Sandeep005@cluster0.gqiqe7c.mongodb.net/?appName=helpdesk"
-    MONGO_DB_NAME = "helpdesk_db"
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+    MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "helpdesk_db")
 
     CORS_ORIGINS = _split_csv(
         os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173")

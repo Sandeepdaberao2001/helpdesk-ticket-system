@@ -66,6 +66,14 @@ function clearMessage() {
     flash.className = "flash hidden";
 }
 
+function getErrorMessage(payload, fallback = "Request failed.") {
+    if (Array.isArray(payload?.errors) && payload.errors.length) {
+        const detail = payload.errors.join(" ");
+        return payload.message ? `${payload.message} ${detail}` : detail;
+    }
+    return payload?.message || fallback;
+}
+
 async function api(path, options = {}) {
     const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
     if (state.token) headers.Authorization = `Bearer ${state.token}`;
@@ -74,7 +82,7 @@ async function api(path, options = {}) {
     const payload = await response.json().catch(() => ({ success: false, message: "Unexpected server response." }));
 
     if (!response.ok || payload.success === false) {
-        const error = new Error(payload.message || "Request failed.");
+        const error = new Error(getErrorMessage(payload));
         error.status = response.status;
         throw error;
     }

@@ -8,6 +8,16 @@ from backend.utils.response import error, success
 
 admin_bp = Blueprint("admin", __name__)
 
+
+def _would_remove_last_active_admin(user: dict, new_role: str, active_admin_count: int) -> bool:
+    return (
+        user.get("role") == "admin"
+        and user.get("is_active", True)
+        and new_role != "admin"
+        and active_admin_count <= 1
+    )
+
+
 @admin_bp.route("/stats", methods=["GET"])
 @admin_required
 def stats():
@@ -110,10 +120,9 @@ def update_role(user_id):
     if new_role not in VALID_ROLES:
         return error(f"Role must be one of: {', '.join(VALID_ROLES)}.", 422)
 
-    if user.get("role") == "admin" and new_role != "admin":
-        remaining_admins = users_col.count_documents({"role": "admin"})
-        if remaining_admins <= 1:
-            return error("At least one admin account must remain.", 403)
+    active_admins = users_col.count_documents({"role": "admin", "is_active": True})
+    if _would_remove_last_active_admin(user, new_role, active_admins):
+        return error("At least one active admin account must remain.", 403)
 
     users_col.update_one({"_id": oid}, {"$set": {"role": new_role}})
     return success(message=f"Role updated to '{new_role}'.")

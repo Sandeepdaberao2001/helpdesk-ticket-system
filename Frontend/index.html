@@ -157,11 +157,11 @@
                 <form id="createTicketForm" class="stack-form wide-form">
                     <label>
                         Title
-                        <input type="text" name="title" placeholder="Short summary of the issue" required>
+                        <input type="text" name="title" placeholder="Short summary of the issue" minlength="5" required>
                     </label>
                     <label>
                         Description
-                        <textarea name="description" rows="6" placeholder="Describe the issue in detail" required></textarea>
+                        <textarea name="description" rows="6" placeholder="Describe the issue in detail" minlength="10" required></textarea>
                     </label>
                     <div class="two-column">
                         <label>

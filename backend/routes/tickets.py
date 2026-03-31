@@ -10,6 +10,20 @@ from backend.utils.response import error, success
 tickets_bp = Blueprint("tickets", __name__)
 
 
+def _is_assignable_support_user(user: dict | None) -> bool:
+    return bool(
+        user
+        and user.get("role") in ("agent", "admin")
+        and user.get("is_active", True)
+    )
+
+
+def _next_resolved_at(current_resolved_at, new_status: str, now: datetime):
+    if new_status in ("resolved", "closed"):
+        return current_resolved_at or now
+    return None
+
+
 @tickets_bp.route("/", methods=["GET"])
 @login_required
 def list_tickets():
@@ -135,7 +149,10 @@ def get_ticket(ticket_id):
 
     agents = []
     if is_agent:
-        agent_docs = users_col.find({"role": {"$in": ["agent", "admin"]}})
+        agent_docs = users_col.find({
+            "role": {"$in": ["agent", "admin"]},
+            "is_active": True,
+        })
         agents = [{"id": str(a["_id"]), "username": a["username"]} for a in agent_docs]
 
     return success(data={"ticket": s, "agents": agents})
@@ -169,10 +186,11 @@ def update_ticket(ticket_id):
         if not is_agent and new_status not in ("closed",):
             return error("Users can only close their own tickets.", 403)
         updates["status"] = new_status
-        if new_status == "resolved":
-            updates["resolved_at"] = datetime.utcnow()
-        elif ticket.get("resolved_at") is not None:
-            updates["resolved_at"] = None
+        updates["resolved_at"] = _next_resolved_at(
+            ticket.get("resolved_at"),
+            new_status,
+            updates["updated_at"],
+        )
 
     if "priority" in data and is_agent:
         updates["priority"] = str(data["priority"]).strip().lower()
@@ -185,7 +203,7 @@ def update_ticket(ticket_id):
             if not agent_oid:
                 return error("Invalid assignee ID.", 400)
             agent_user = users_col.find_one({"_id": agent_oid})
-            if agent_user and agent_user.get("role") in ("agent", "admin"):
+            if _is_assignable_support_user(agent_user):
                 updates["assigned_to"] = agent_oid
             else:
                 return error("Assignee must be an active agent or admin.", 422)

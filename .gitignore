@@ -1,0 +1,9 @@
+.venv/
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+backend/.env
+backend/database/*.db
